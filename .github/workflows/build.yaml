@@ -25,6 +25,12 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --worker.oci.max-parallelism=1
+          config: |
+            [worker.oci]
+              enabled = true
+              max-parallelism = 1
 
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
