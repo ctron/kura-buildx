@@ -25,11 +25,6 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
-        with:
-          config: |
-            [worker.oci]
-              enabled = true
-              max-parallelism = 1
 
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
@@ -48,4 +43,14 @@ jobs:
           [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
+
+          # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
+          # with 4 parallel builds, we do 4 sequential builds without pushing. The final 5th build, actually
+          # uses the build cache and only tags and pushes the images.
+
+          docker buildx build kura/kura/container/kura_alpine --platform linux/amd64 --tag $IMAGE_ID:$VERSION
+          docker buildx build kura/kura/container/kura_alpine --platform linux/arm64 --tag $IMAGE_ID:$VERSION
+          docker buildx build kura/kura/container/kura_alpine --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION
+          docker buildx build kura/kura/container/kura_alpine --platform linux/arm/v6 --tag $IMAGE_ID:$VERSION
+
           docker buildx build kura/kura/container/kura_alpine --push --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --tag $IMAGE_ID:$VERSION
