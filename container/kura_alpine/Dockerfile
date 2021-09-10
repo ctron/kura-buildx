@@ -35,13 +35,12 @@ RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     fi && \
     cd kura && \
     if [ -n "$KURA_COMMIT" ]; then git checkout "$KURA_COMMIT"; fi && \
-    git log -1 && \
-      cd /kura && \
-      `# Replace broken 'nn' script` \
-      cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh && \
-      cd /kura && mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS && \
-      cd /kura && mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup && \
-      cd /kura && mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu && \
+    cd /kura && \
+    `# Replace broken 'nn' script` \
+    cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh && \
+    cd /kura && mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS && \
+    cd /kura && mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup && \
+    cd /kura && mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu && \
     ls -la /kura/kura/distrib/target && \
     apk del maven git && \
     apk --no-cache add procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which busybox-extras && \
