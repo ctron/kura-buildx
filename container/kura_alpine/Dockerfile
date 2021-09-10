@@ -20,7 +20,7 @@ ENV \
   KURA_DIR=/opt/eclipse/kura \
   LAUNCHER_VERSION="1.5.800.v20200727-1323"
 
-COPY . /context
+#COPY . /context
 
 RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     chmod a+x -R /usr/local/bin && \
@@ -28,19 +28,20 @@ RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     apk --no-cache add git openjdk8 maven && \
     apk --no-cache add bash zip curl && \
     if [ -d /context/.git ]; then \
-      mv /context/kura /kura; \
+      mv /context /kura; \
       mv /kura/kura/container/kura_alpine /context; \
     else \
       git clone "$GIT_REPO" -b "$GIT_BRANCH"; \
     fi && \
     cd kura && \
     if [ -n "$KURA_COMMIT" ]; then git checkout "$KURA_COMMIT"; fi && \
-    cd /kura && \
-    `# Replace broken 'nn' script` \
-    cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh && \
-    cd /kura && mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS && \
-    cd /kura && mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup && \
-    cd /kura && mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu && \
+    git log -1 && \
+      cd /kura && \
+      `# Replace broken 'nn' script` \
+      cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh && \
+      cd /kura && mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS && \
+      cd /kura && mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup && \
+      cd /kura && mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu && \
     ls -la /kura/kura/distrib/target && \
     apk del maven git && \
     apk --no-cache add procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which busybox-extras && \
