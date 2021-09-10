@@ -45,11 +45,11 @@ jobs:
           echo VERSION=$VERSION
 
           # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
-          # with 4 parallel builds, we do sequential builds without pushing. The final build, actually
+          # with parallel builds, we do sequential builds without pushing. The final build, actually
           # uses the build cache and only tags and pushes the images.
 
-          docker buildx build kura/kura/container/kura_alpine --platform linux/amd64 --tag $IMAGE_ID:$VERSION
-          docker buildx build kura/kura/container/kura_alpine --platform linux/arm64 --tag $IMAGE_ID:$VERSION
-          docker buildx build kura/kura/container/kura_alpine --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION
+          docker buildx build container/kura_alpine --platform linux/amd64 --tag $IMAGE_ID:$VERSION
+          docker buildx build container/kura_alpine --platform linux/arm64 --tag $IMAGE_ID:$VERSION
+          docker buildx build container/kura_alpine --platform --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m" linux/arm/v7 --tag $IMAGE_ID:$VERSION
 
-          docker buildx build kura/kura/container/kura_alpine --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION
+          docker buildx build container/kura_alpine --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION
