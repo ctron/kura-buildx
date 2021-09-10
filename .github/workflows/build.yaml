@@ -44,14 +44,12 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          cd kura-buildx
-
           # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
           # with parallel builds, we do sequential builds without pushing. The final build, actually
           # uses the build cache and only tags and pushes the images.
 
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+          docker buildx build kura -f container/kura_alpine/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+          docker buildx build kura -f container/kura_alpine/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+          docker buildx build kura -f container/kura_alpine/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
 
-          docker buildx build . -f container/kura_alpine/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+          docker buildx build kura -f container/kura_alpine/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="--DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
