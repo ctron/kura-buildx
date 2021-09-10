@@ -28,7 +28,7 @@ RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     apk --no-cache add git openjdk8 maven && \
     apk --no-cache add bash zip curl && \
     if [ -d /context/.git ]; then \
-      mv /context /kura; \
+      mv /context/kura /kura; \
       mv /kura/kura/container/kura_alpine /context; \
     else \
       git clone "$GIT_REPO" -b "$GIT_BRANCH"; \
