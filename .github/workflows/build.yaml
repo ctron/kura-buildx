@@ -44,6 +44,8 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
+          cd kura-buildx
+
           # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
           # with parallel builds, we do sequential builds without pushing. The final build, actually
           # uses the build cache and only tags and pushes the images.
