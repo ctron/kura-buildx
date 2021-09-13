@@ -30,7 +30,7 @@ RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     chmod a+x -R /usr/local/bin && \
     apk update && \
     apk --no-cache add git openjdk8 maven && \
-    jar --version && \
+    which jar && \
     apk --no-cache add bash zip curl && \
     if [ -d /context/.git ]; then \
       mv /context /kura; \
