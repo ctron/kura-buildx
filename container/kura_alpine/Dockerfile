@@ -26,7 +26,11 @@ ENV \
 
 #COPY . /context
 
-RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
+RUN true && \
+    echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
+    if [ $TARGETPLATFORM == "linux/arm64"]; then PROFILE="raspberry-pi-2-3-nn"; fi && \
+    if [ $TARGETPLATFORM == "linux/arm/v7"]; then PROFILE="raspberry-pi-2-3-nn"; fi && \
+    echo "Profile: $PROFILE" && \
     chmod a+x -R /usr/local/bin && \
     apk update && \
     apk --no-cache add git openjdk8 maven && \
