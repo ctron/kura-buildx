@@ -11,6 +11,10 @@ jobs:
 
     env:
       IMAGE_NAME: kura-test
+      # Tweak the build parameters a bit.
+      # Important: ensure that we stay below ~3.5GiB of RAM usage total. As armv7 is a 32bit architecture, and there is
+      # no swap space available.
+      MAVEN_PROPS: -DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m
 
     steps:
 
@@ -30,26 +34,39 @@ jobs:
         run: echo ${{ steps.buildx.outputs.platforms }}
 
       - name: Login to github container repository
-        if: ${{github.head_ref == ''}} # only for non-PRs
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build, tag, and push
-        if: ${{github.head_ref == ''}} # only for non-PRs
+      - name: Prepare information
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "main" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID >> $GITHUB_ENV
+          echo VERSION=$VERSION >> $GITHUB_ENV
+
+      - name: Verify information
+        run: |
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
-          # with parallel builds, we do sequential builds without pushing. The final build, actually
-          # uses the build cache and only tags and pushes the images.
+      # As we can't seem to limit the concurrent builds, and the github actions runner gets overloaded
+      # with parallel builds, we do sequential builds without pushing. The final build, actually
+      # uses the build cache and only tags and pushes the images.
 
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="-DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="-DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="-DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+      - name: Build (linux/amd64)
+        run: |
+          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="${MAVEN_PROPS}"
 
-          docker buildx build . -f container/kura_alpine/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="-DskipTests -Dcheckstyle.skip -Dgwt.extraJvmArgs=-Xmx1536m"
+      - name: Build (linux/arm64)
+        run: |
+          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="${MAVEN_PROPS}"
+
+      - name: Build (linux/arm/v7)
+        run: |
+          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="${MAVEN_PROPS}"
+
+      - name: Tag and Push
+        run: |
+          docker buildx build . -f container/kura_alpine/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION --build-arg MAVEN_PROPS="${MAVEN_PROPS}"
