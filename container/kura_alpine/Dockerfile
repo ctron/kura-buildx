@@ -20,18 +20,24 @@ ENV \
   KURA_DIR=/opt/eclipse/kura \
   LAUNCHER_VERSION="1.5.800.v20200727-1323"
 
+# required for JDK tools like "jar"
+ENV \
+  PATH=${PATH}:/usr/lib/jvm/default-jvm/bin
+
 #COPY . /context
 
 RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT" && \
     chmod a+x -R /usr/local/bin && \
     apk update && \
     apk --no-cache add git openjdk8 maven && \
+    jar --version && \
     apk --no-cache add bash zip curl && \
     if [ -d /context/.git ]; then \
       mv /context /kura; \
       mv /kura/kura/container/kura_alpine /context; \
     else \
       git clone "$GIT_REPO" -b "$GIT_BRANCH"; \
+      cp -a kura/kura/container/kura_alpine /context; \
     fi && \
     cd kura && \
     if [ -n "$KURA_COMMIT" ]; then git checkout "$KURA_COMMIT"; fi && \
