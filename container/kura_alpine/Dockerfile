@@ -48,7 +48,7 @@ RUN git log -1
 # Replace broken 'nn' script
 RUN cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh
 
-ARG MAVEN_PROPS="--DskipTests"
+ARG MAVEN_PROPS="-DskipTests -Dcheckstyle.skip"
 ARG MAVEN_OPTS=""
 
 RUN mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS
