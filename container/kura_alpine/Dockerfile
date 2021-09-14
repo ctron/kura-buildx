@@ -69,6 +69,8 @@ RUN find /installers
 
 FROM docker.io/library/alpine:3.11
 
+LABEL org.opencontainers.image.source="https://github.com/ctron/kura-buildx"
+
 ARG TARGETPLATFORM
 
 COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
