@@ -57,9 +57,19 @@ RUN mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu
 
 RUN ls -la /kura/kura/distrib/target
 
+RUN mkdir -p /installers/linux/amd64
+RUN mkdir -p /installers/linux/arm64
+RUN mkdir -p /installers/linux/arm/7
+
+RUN cp /kura/kura/distrib/target/kura_intel-up2-centos-7-nn_installer.sh /installers/linux/amd64/
+RUN cp /kura/kura/distrib/target/kura_raspberry-pi-2-3-nn_installer.sh /installers/linux/arm64/
+RUN cp /kura/kura/distrib/target/kura_raspberry-pi-2-3-nn_installer.sh /installers/linux/arm/7/
+
+RUN find /installers
+
 FROM docker.io/library/alpine:3.11
 
-COPY --from=builder /kura/kura/distrib/target/kura_*_installer.sh /installer.sh
+COPY --from=builder /kura/kura/distrib/target/kura_$TARGETPLATFORM_installer.sh /installer.sh
 
 ARG PACKED=false
 
