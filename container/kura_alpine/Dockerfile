@@ -79,22 +79,24 @@ ARG PACKED=false
 
 ENV \
   KURA_DIR=/opt/eclipse/kura \
-  JAVA_HOME=/usr/lib/jvm/jre-1.8.0 \
+  JAVA_HOME=/usr/lib/jvm/default-jvm \
   SKIP_JAVA_VERSION_CHECK=true \
   LAUNCHER_VERSION="1.5.800.v20200727-1323"
 
 ENV \
-  PATH=$PATH:/usr/lib/jvm/java-1.8-openjdk/bin
+  PATH=${PATH}:/usr/lib/jvm/default-jvm/bin
 
 RUN mkdir -p /usr/local/bin
 RUN apk update
-RUN apk --no-cache add openjdk8 eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which busybox-extras
+RUN apk --no-cache add openjdk8 eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 RUN ln -s /bin/bash /usr/bin/bash
 
 COPY --from=builder /context/bin/* /usr/local/bin
 
 RUN true && \
-    /installer.sh && \
+    if ! /installer.sh; then \
+      cat /tmp/kura_install_*.log ; false ; \
+    fi && \
     echo "Kura installer completed" && \
     rm installer.sh && \
     chmod a+rw -R /opt/eclipse && \
