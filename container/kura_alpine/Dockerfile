@@ -59,7 +59,7 @@ RUN ls -la /kura/kura/distrib/target
 
 RUN mkdir -p /installers/linux/amd64
 RUN mkdir -p /installers/linux/arm64
-RUN mkdir -p /installers/linux/arm/7
+RUN mkdir -p /installers/linux/arm/v7
 
 RUN cp /kura/kura/distrib/target/kura_*_intel-up2-centos-7-nn_installer.sh /installers/linux/amd64/installer.sh
 RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm64/installer.sh
