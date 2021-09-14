@@ -61,9 +61,9 @@ RUN mkdir -p /installers/linux/amd64
 RUN mkdir -p /installers/linux/arm64
 RUN mkdir -p /installers/linux/arm/7
 
-RUN cp /kura/kura/distrib/target/kura_*_intel-up2-centos-7-nn_installer.sh /installers/linux/amd64/
-RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm64/
-RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm/7/
+RUN cp /kura/kura/distrib/target/kura_*_intel-up2-centos-7-nn_installer.sh /installers/linux/amd64/installer.sh
+RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm64/installer.sh
+RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm/7/installer.sh
 
 RUN find /installers
 
@@ -71,7 +71,7 @@ FROM docker.io/library/alpine:3.11
 
 ARG TARGETPLATFORM
 
-COPY --from=builder /kura/kura/distrib/target/kura_${TARGETPLATFORM}_installer.sh /installer.sh
+COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
 
 ARG PACKED=false
 
