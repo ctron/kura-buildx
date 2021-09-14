@@ -1,13 +1,15 @@
-FROM docker.io/library/alpine:3.11 as builder
+FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.11 AS builder
 
 MAINTAINER Eclipse Kura Developers <kura-dev@eclipse.org>
 LABEL maintainer="Eclipse Kura Developers <kura-dev@eclipse.org>" \
       io.k8s.description="Containerized version of the Eclipse Kura™ IoT gateway"
 
+ARG BUILDPLATFORM
+
 ARG GIT_REPO=""
 ARG GIT_BRANCH=""
 ARG KURA_COMMIT=""
-ARG PROFILE=intel-up2-centos-7-nn
+ARG PROFILE=intel-up2-centos-7-nn,raspberry-pi-2-3-nn
 
 ENV \
   GIT_REPO=${GIT_REPO:-https://github.com/eclipse/kura.git} \
@@ -47,15 +49,11 @@ RUN git log -1
 RUN cp kura/distrib/src/main/sh/extract.sh kura/distrib/src/main/sh/extract_nn.sh
 
 ARG MAVEN_PROPS="--DskipTests"
+ARG MAVEN_OPTS=""
 
 RUN mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS
 RUN mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup
-
-RUN true && \
-    echo "Container target platform: $TARGETPLATFORM" && \
-    if [ "$TARGETPLATFORM" == "linux/arm64" ]; then PROFILE="raspberry-pi-2-3-nn"; fi && \
-    if [ "$TARGETPLATFORM" == "linux/arm/v7" ]; then PROFILE="raspberry-pi-2-3-nn"; fi && \
-    mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu
+RUN mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu
 
 RUN ls -la /kura/kura/distrib/target
 
