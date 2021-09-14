@@ -69,7 +69,7 @@ RUN find /installers
 
 FROM docker.io/library/alpine:3.11
 
-COPY --from=builder /kura/kura/distrib/target/kura_$TARGETPLATFORM_installer.sh /installer.sh
+COPY --from=builder /kura/kura/distrib/target/kura_${TARGETPLATFORM}_installer.sh /installer.sh
 
 ARG PACKED=false
 
