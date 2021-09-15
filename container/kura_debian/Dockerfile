@@ -118,7 +118,7 @@ COPY --from=builder /context/bin/* /usr/local/bin
 RUN /bin/sh -c \
     set -eux ; \
     if ! /installer.sh; then \
-      cat /tmp/kura_install_*.log ; false ;
+      cat /tmp/kura_install_*.log ; false ; \
     fi ; \
     echo "Kura installer completed" ; \
     rm installer.sh ; \
