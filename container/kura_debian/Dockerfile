@@ -14,7 +14,7 @@ ARG PROFILE=intel-up2-centos-7-nn,raspberry-pi-2-3-nn
 ENV \
   GIT_REPO=${GIT_REPO:-https://github.com/eclipse/kura.git} \
   GIT_BRANCH=${GIT_BRANCH:-develop} \
-  JAVA_HOME=/usr/lib/jvm/default-jvm \
+  JAVA_HOME=/usr/lib/jvm/default-java \
   KURA_DIR=/opt/eclipse/kura \
   LAUNCHER_VERSION="1.5.800.v20200727-1323" \
   DEBIAN_FRONTEND=noninteractive
