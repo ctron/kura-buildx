@@ -115,28 +115,29 @@ RUN /bin/sh -c \
 
 COPY --from=builder /context/bin/* /usr/local/bin
 
-RUN true && \
+RUN /bin/sh -c \
+    set -eux ; \
     if ! /installer.sh; then \
-      cat /tmp/kura_install_*.log ; false ; \
-    fi && \
-    echo "Kura installer completed" && \
-    rm installer.sh && \
-    chmod a+rw -R /opt/eclipse && \
-    find /opt/eclipse -type d | xargs chmod a+x && \
-    chmod a+rwx /var/log && \
+      cat /tmp/kura_install_*.log ; false ;
+    fi ; \
+    echo "Kura installer completed" ; \
+    rm installer.sh ; \
+    chmod a+rw -R /opt/eclipse ; \
+    find /opt/eclipse -type d | xargs chmod a+x ; \
+    chmod a+rwx /var/log ; \
     `# Test for the existence of the entry point` \
-    test -x "${KURA_DIR}/bin/start_kura.sh" && \
-    chmod a+x /usr/local/bin/* && \
-    install -m 0777 -d "${KURA_DIR}/data" && \
-    sed -i 's/kura.primary.network.interface/#kura.primary.network.interface/g' ${KURA_DIR}/framework/kura.properties && \
-    mkdir -p ${KURA_DIR}/packages && \
-    if [ "$PACKED" == "true" ]; then touch /kura.packed && pack-kura; fi && \
+    test -x "${KURA_DIR}/bin/start_kura.sh" ; \
+    chmod a+x /usr/local/bin/* ; \
+    install -m 0777 -d "${KURA_DIR}/data" ; \
+    sed -i 's/kura.primary.network.interface/#kura.primary.network.interface/g' ${KURA_DIR}/framework/kura.properties ; \
+    mkdir -p ${KURA_DIR}/packages ; \
+    if [ "$PACKED" == "true" ]; then touch /kura.packed && pack-kura; fi ; \
     \
-    unpack-kura && \
-    sed -i "s/\-printf \'\%P.n\'//g" /usr/local/bin/dp-install && \
-    dp-install "https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" && \
-    add-config-ini "felix.fileinstall.disableNio2=true" && \
-    add-config-ini "felix.fileinstall.dir=/load" && \
+    unpack-kura ; \
+    sed -i "s/\-printf \'\%P.n\'//g" /usr/local/bin/dp-install ; \
+    dp-install "https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
+    add-config-ini "felix.fileinstall.disableNio2=true" ; \
+    add-config-ini "felix.fileinstall.dir=/load" ; \
     pack-kura
 
 EXPOSE 443
