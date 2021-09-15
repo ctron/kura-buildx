@@ -79,17 +79,41 @@ ARG PACKED=false
 
 ENV \
   KURA_DIR=/opt/eclipse/kura \
-  JAVA_HOME=/usr/lib/jvm/default-jvm \
   SKIP_JAVA_VERSION_CHECK=true \
   LAUNCHER_VERSION="1.5.800.v20200727-1323"
 
 ENV \
-  PATH=${PATH}:/usr/lib/jvm/default-jvm/bin
+  JAVA_HOME=/opt/java/openjdk \
+  PATH=${PATH}:/opt/java/openjdk/bin
 
 RUN mkdir -p /usr/local/bin
 RUN apk update
-RUN apk --no-cache add openjdk8 eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
+RUN apk --no-cache add eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 RUN ln -s /bin/bash /usr/bin/bash
+
+RUN /bin/sh -c \
+    set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "${TARGETPLATFORM}" in \
+       "linux/arm64") \
+         BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.12_7.tar.gz'; \
+         ;; \
+       "linux/arm/v7") \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jdk_arm_linux_hotspot_11.0.11_9.tar.gz'; \
+         ;; \
+       "linux/amd64") \
+         BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz'; \
+         ;; \
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
+    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
+    mkdir -p /opt/java/openjdk;  \
+    cd /opt/java/openjdk;  \
+    tar -xf /tmp/openjdk.tar.gz --strip-components=1;  \
+    rm -rf /tmp/openjdk.tar.gz
 
 COPY --from=builder /context/bin/* /usr/local/bin
 
