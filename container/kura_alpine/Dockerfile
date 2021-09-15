@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.14 AS builder
+FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.11 AS builder
 
 MAINTAINER Eclipse Kura Developers <kura-dev@eclipse.org>
 LABEL maintainer="Eclipse Kura Developers <kura-dev@eclipse.org>" \
@@ -27,7 +27,7 @@ RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT"
 RUN chmod a+x -R /usr/local/bin
 
 RUN apk update
-RUN apk --no-cache add git openjdk11 maven bash zip curl
+RUN apk --no-cache add git openjdk8 maven bash zip curl
 RUN which jar
 
 RUN true && \
@@ -67,7 +67,7 @@ RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installe
 
 RUN find /installers
 
-FROM docker.io/library/alpine:3.14
+FROM docker.io/library/alpine:3.11
 
 LABEL org.opencontainers.image.source="https://github.com/ctron/kura-buildx"
 
@@ -88,7 +88,7 @@ ENV \
 
 RUN mkdir -p /usr/local/bin
 RUN apk update
-RUN apk --no-cache add openjdk11 eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
+RUN apk --no-cache add openjdk8 eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 RUN ln -s /bin/bash /usr/bin/bash
 
 COPY --from=builder /context/bin/* /usr/local/bin
