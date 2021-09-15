@@ -16,7 +16,8 @@ ENV \
   GIT_BRANCH=${GIT_BRANCH:-develop} \
   JAVA_HOME=/usr/lib/jvm/default-jvm \
   KURA_DIR=/opt/eclipse/kura \
-  LAUNCHER_VERSION="1.5.800.v20200727-1323"
+  LAUNCHER_VERSION="1.5.800.v20200727-1323" \
+  DEBIAN_FRONTEND=noninteractive
 
 RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT"
 
@@ -76,7 +77,8 @@ ARG PACKED=false
 ENV \
   KURA_DIR=/opt/eclipse/kura \
   SKIP_JAVA_VERSION_CHECK=true \
-  LAUNCHER_VERSION="1.5.800.v20200727-1323"
+  LAUNCHER_VERSION="1.5.800.v20200727-1323" \
+  DEBIAN_FRONTEND=noninteractive
 
 ENV \
   JAVA_HOME=/opt/java/openjdk \
