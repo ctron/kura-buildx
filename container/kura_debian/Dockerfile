@@ -90,6 +90,8 @@ RUN apt-get -y update
 RUN apt-get -y install bash openjdk-11-jdk zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
 #RUN apk --no-cache add eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 
+RUN ln -s /bin/bash /usr/bin/bash
+
 RUN /bin/sh -c \
     set -eux; \
     case "${TARGETPLATFORM}" in \
@@ -120,6 +122,7 @@ RUN /bin/sh -c \
     if ! /installer.sh; then \
       cat /tmp/kura_install_*.log ; false ; \
     fi ; \
+    cat /tmp/kura_install_*.log ; \
     echo "Kura installer completed" ; \
     rm installer.sh ; \
     chmod a+rw -R /opt/eclipse ; \
