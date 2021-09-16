@@ -53,16 +53,16 @@ jobs:
 
       - name: Build (linux/amd64)
         run: |
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION
+          docker buildx build . -f container/kura_debian/Dockerfile --platform linux/amd64 --tag $IMAGE_ID:$VERSION
 
       - name: Build (linux/arm64)
         run: |
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION
+          docker buildx build . -f container/kura_debian/Dockerfile --platform linux/arm64 --tag $IMAGE_ID:$VERSION
 
       - name: Build (linux/arm/v7)
         run: |
-          docker buildx build . -f container/kura_alpine/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION
+          docker buildx build . -f container/kura_debian/Dockerfile --platform linux/arm/v7 --tag $IMAGE_ID:$VERSION
 
       - name: Tag and Push
         run: |
-          docker buildx build . -f container/kura_alpine/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION
+          docker buildx build . -f container/kura_debian/Dockerfile --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_ID:$VERSION
