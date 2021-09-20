@@ -127,7 +127,7 @@ RUN /bin/bash -c '\
     cat /tmp/kura_install_*.log || true ; \
     echo "Kura installer completed" ; \
     rm installer.sh ; \
-    rm /*.zip ; \
+    rm -f /*.zip ; \
     chmod a+rw -R /opt/eclipse ; \
     find /opt/eclipse -type d | xargs chmod a+x ; \
     chmod a+rwx /var/log ; \
