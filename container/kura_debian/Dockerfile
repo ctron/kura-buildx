@@ -87,7 +87,8 @@ ENV \
 RUN mkdir -p /usr/local/bin
 
 RUN apt-get -y update
-RUN apt-get -y install bash openjdk-11-jdk zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
+#RUN apt-get -y install bash openjdk-11-jdk zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
+RUN apt-get -y install bash zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
 #RUN apk --no-cache add eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 
 RUN ln -s /bin/bash /usr/bin/bash
