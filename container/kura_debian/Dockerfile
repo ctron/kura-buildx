@@ -66,7 +66,9 @@ RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installe
 
 RUN find /installers
 
-FROM docker.io/library/debian:buster
+#FROM docker.io/library/debian:buster
+# revert back to an older version, as in the current version, the CA in the armv7 image is messed up
+FROM docker.io/library/debian:buster@sha256:cdb5ae50fedfda0bc2f9e4d303683ab6096c84db9e97b0bbfea0653549aeb3f8
 
 LABEL org.opencontainers.image.source="https://github.com/ctron/kura-buildx"
 
@@ -87,9 +89,7 @@ ENV \
 RUN mkdir -p /usr/local/bin
 
 RUN apt-get -y update
-#RUN apt-get -y install bash openjdk-11-jdk zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
 RUN apt-get -y install bash zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
-#RUN apk --no-cache add eudev glib bash zip curl procps zip unzip gzip tar psmisc socat dos2unix openssl net-tools which grep busybox-extras
 
 RUN ln -s /bin/bash /usr/bin/bash
 
