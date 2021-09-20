@@ -6,26 +6,28 @@ LABEL maintainer="Eclipse Kura Developers <kura-dev@eclipse.org>" \
 
 ARG BUILDPLATFORM
 
-ARG GIT_REPO=""
-ARG GIT_BRANCH=""
-ARG KURA_COMMIT=""
-ARG PROFILE=intel-up2-centos-7-nn,raspberry-pi-2-3-nn
-
 ENV \
-  GIT_REPO=${GIT_REPO:-https://github.com/eclipse/kura.git} \
-  GIT_BRANCH=${GIT_BRANCH:-develop} \
   JAVA_HOME=/usr/lib/jvm/default-java \
-  KURA_DIR=/opt/eclipse/kura \
-  LAUNCHER_VERSION="1.5.800.v20200727-1323" \
   DEBIAN_FRONTEND=noninteractive
-
-RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT"
 
 RUN chmod a+x -R /usr/local/bin
 
 RUN apt-get -y update
 RUN apt-get -y install openjdk-11-jdk git maven
 RUN which jar
+
+ARG GIT_REPO=""
+ARG GIT_BRANCH=""
+ARG KURA_COMMIT=""
+ARG PROFILE=intel-up2-centos-7-nn,raspberry-pi-2-3-nn
+
+ENV \
+  GIT_REPO=${GIT_REPO:-https://github.com/ctron/kura.git} \
+  GIT_BRANCH=${GIT_BRANCH:-feature/java_11_1} \
+  KURA_DIR=/opt/eclipse/kura \
+  LAUNCHER_VERSION="1.5.800.v20200727-1323"
+
+RUN echo "$GIT_REPO / $GIT_BRANCH / $KURA_COMMIT"
 
 RUN true && \
     if [ -d /context/.git ]; then \
@@ -70,9 +72,7 @@ LABEL org.opencontainers.image.source="https://github.com/ctron/kura-buildx"
 
 ARG TARGETPLATFORM
 
-COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
-
-ARG PACKED=false
+ARG PACKED="false"
 
 ENV \
   KURA_DIR=/opt/eclipse/kura \
@@ -92,7 +92,7 @@ RUN apt-get -y install bash openjdk-11-jdk zip unzip curl gzip tar socat dos2uni
 
 RUN ln -s /bin/bash /usr/bin/bash
 
-RUN /bin/sh -c \
+RUN /bin/sh -c '\
     set -eux; \
     case "${TARGETPLATFORM}" in \
        "linux/arm64") \
@@ -113,11 +113,13 @@ RUN /bin/sh -c \
     mkdir -p /opt/java/openjdk;  \
     cd /opt/java/openjdk;  \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1;  \
-    rm -rf /tmp/openjdk.tar.gz
+    rm -rf /tmp/openjdk.tar.gz \
+    '
 
+COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
 COPY --from=builder /context/bin/* /usr/local/bin
 
-RUN /bin/sh -c \
+RUN /bin/bash -c '\
     set -eux ; \
     if ! /installer.sh; then \
       cat /tmp/kura_install_*.log ; false ; \
@@ -125,23 +127,25 @@ RUN /bin/sh -c \
     cat /tmp/kura_install_*.log ; \
     echo "Kura installer completed" ; \
     rm installer.sh ; \
+    rm /*.zip ; \
     chmod a+rw -R /opt/eclipse ; \
     find /opt/eclipse -type d | xargs chmod a+x ; \
     chmod a+rwx /var/log ; \
-    `# Test for the existence of the entry point` \
+    \
     test -x "${KURA_DIR}/bin/start_kura.sh" ; \
     chmod a+x /usr/local/bin/* ; \
     install -m 0777 -d "${KURA_DIR}/data" ; \
-    sed -i 's/kura.primary.network.interface/#kura.primary.network.interface/g' ${KURA_DIR}/framework/kura.properties ; \
+    sed -i "s/kura.primary.network.interface/#kura.primary.network.interface/g" ${KURA_DIR}/framework/kura.properties ; \
     mkdir -p ${KURA_DIR}/packages ; \
-    if [ "$PACKED" == "true" ]; then touch /kura.packed; pack-kura; fi ; \
+    if [[ "$PACKED" == "true" ]] ; then touch /kura.packed ; pack-kura ; fi ; \
     \
     unpack-kura ; \
-    sed -i "s/\-printf \'\%P.n\'//g" /usr/local/bin/dp-install ; \
     dp-install "https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
     add-config-ini "felix.fileinstall.disableNio2=true" ; \
     add-config-ini "felix.fileinstall.dir=/load" ; \
-    pack-kura
+    pack-kura ; \
+    sed -i "s/--add-modules=java\\.sql,java\\.xml,java\\.xml\\.bind/--add-modules=ALL-SYSTEM/g" /usr/local/bin/start-kura ; \
+    '
 
 EXPOSE 443
 
