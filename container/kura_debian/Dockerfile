@@ -124,7 +124,7 @@ RUN /bin/bash -c '\
     if ! /installer.sh; then \
       cat /tmp/kura_install_*.log ; false ; \
     fi ; \
-    cat /tmp/kura_install_*.log ; \
+    cat /tmp/kura_install_*.log || true ; \
     echo "Kura installer completed" ; \
     rm installer.sh ; \
     rm /*.zip ; \
