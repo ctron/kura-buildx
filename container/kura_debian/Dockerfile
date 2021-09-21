@@ -64,14 +64,6 @@ RUN cp /kura/kura/distrib/target/kura_*_intel-up2-centos-7-nn_installer.sh /inst
 RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm64/installer.sh
 RUN cp /kura/kura/distrib/target/kura_*_raspberry-pi-2-nn_installer.sh /installers/linux/arm/v7/installer.sh
 
-RUN apt-get -y install curl
-
-RUN curl -LfsSo /installers/linux/amd64/openjdk.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz
-RUN curl -LfsSo /installers/linux/arm64/openjdk.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.12_7.tar.gz
-RUN curl -LfsSo /installers/linux/arm/v7/openjdk.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jdk_arm_linux_hotspot_11.0.11_9.tar.gz
-
-RUN curl -LfsSo /installers/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp
-
 RUN find /installers
 
 FROM docker.io/library/debian:buster
@@ -96,13 +88,28 @@ RUN mkdir -p /usr/local/bin
 
 RUN apt-get -y update
 RUN apt-get -y install bash zip unzip curl gzip tar socat dos2unix grep procps psmisc libglib2.0-0 openssl net-tools
+RUN c_rehash /etc/ssl/certs
 
 RUN ln -s /bin/bash /usr/bin/bash
 
-COPY --from=builder /installers/${TARGETPLATFORM}/openjdk.tar.gz /tmp/openjdk.tar.gz
-
 RUN /bin/sh -c '\
     set -eux; \
+    case "${TARGETPLATFORM}" in \
+       "linux/arm64") \
+         BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.12_7.tar.gz'; \
+         ;; \
+       "linux/arm/v7") \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jdk_arm_linux_hotspot_11.0.11_9.tar.gz'; \
+         ;; \
+       "linux/amd64") \
+         BINARY_URL='https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz'; \
+         ;; \
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
+    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
     mkdir -p /opt/java/openjdk;  \
     cd /opt/java/openjdk;  \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1;  \
@@ -112,7 +119,6 @@ RUN /bin/sh -c '\
 
 COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
 COPY --from=builder /context/bin/* /usr/local/bin
-COPY --from=builder /installers/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp /tmp/
 
 RUN /bin/bash -c '\
     set -eux ; \
@@ -135,8 +141,7 @@ RUN /bin/bash -c '\
     if [[ "$PACKED" == "true" ]] ; then touch /kura.packed ; pack-kura ; fi ; \
     \
     unpack-kura ; \
-    dp-install-local "/tmp/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
-    rm -f /tmp/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp ; \
+    dp-install "https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
     add-config-ini "felix.fileinstall.disableNio2=true" ; \
     add-config-ini "felix.fileinstall.dir=/load" ; \
     pack-kura ; \
