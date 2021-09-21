@@ -147,6 +147,8 @@ RUN /bin/bash -c '\
     pack-kura ; \
     '
 
+COPY bin/start-kura /usr/local/bin
+
 EXPOSE 443
 
 VOLUME ["/load"]
