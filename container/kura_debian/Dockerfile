@@ -119,6 +119,8 @@ RUN /bin/sh -c '\
 
 COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
 COPY --from=builder /context/bin/* /usr/local/bin
+COPY bin/start-kura /usr/local/bin
+RUN chmod a+x /usr/local/bin/*
 
 RUN /bin/bash -c '\
     set -eux ; \
@@ -147,7 +149,6 @@ RUN /bin/bash -c '\
     pack-kura ; \
     '
 
-COPY bin/start-kura /usr/local/bin
 
 EXPOSE 443
 
