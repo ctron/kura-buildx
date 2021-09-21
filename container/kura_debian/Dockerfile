@@ -13,7 +13,7 @@ ENV \
 RUN chmod a+x -R /usr/local/bin
 
 RUN apt-get -y update
-RUN apt-get -y install openjdk-11-jdk git maven
+RUN apt-get -y install openjdk-11-jdk git maven unzip zip
 RUN which jar
 
 ARG GIT_REPO=""
