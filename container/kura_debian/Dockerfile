@@ -149,6 +149,14 @@ RUN /bin/bash -c '\
     pack-kura ; \
     '
 
+# Ensure that we have all system certificates available in Kura
+
+RUN /bin/bash -c '\
+    set -eux ; \
+    apt-get install -y p11-kit ; \
+    export P11_KIT_NO_USER_CONFIG=1 ; \
+    /usr/bin/p11-kit extract -v --format=java-cacerts --filter=ca-anchors --overwrite --purpose server-auth /opt/eclipse/kura/user/security/cacerts.ks ; \
+    '
 
 EXPOSE 443
 
