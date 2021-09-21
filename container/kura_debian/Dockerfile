@@ -70,6 +70,8 @@ RUN curl -LfsSo /installers/linux/amd64/openjdk.tar.gz https://github.com/adopti
 RUN curl -LfsSo /installers/linux/arm64/openjdk.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.12_7.tar.gz
 RUN curl -LfsSo /installers/linux/arm/v7/openjdk.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jdk_arm_linux_hotspot_11.0.11_9.tar.gz
 
+RUN curl -LfsSo /installers/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp
+
 RUN find /installers
 
 FROM docker.io/library/debian:buster
@@ -110,6 +112,7 @@ RUN /bin/sh -c '\
 
 COPY --from=builder /installers/${TARGETPLATFORM}/installer.sh /installer.sh
 COPY --from=builder /context/bin/* /usr/local/bin
+COPY --from=builder /installers/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp /tmp/
 
 RUN /bin/bash -c '\
     set -eux ; \
@@ -132,11 +135,11 @@ RUN /bin/bash -c '\
     if [[ "$PACKED" == "true" ]] ; then touch /kura.packed ; pack-kura ; fi ; \
     \
     unpack-kura ; \
-    dp-install "https://repo1.maven.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.utils.fileinstall/0.6.0/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
+    dp-install-local "/tmp/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp" ; \
+    rm -f /tmp/de.dentrassi.kura.addons.utils.fileinstall-0.6.0.dp ; \
     add-config-ini "felix.fileinstall.disableNio2=true" ; \
     add-config-ini "felix.fileinstall.dir=/load" ; \
     pack-kura ; \
-    sed -i "s/--add-modules=java\\.sql,java\\.xml,java\\.xml\\.bind/--add-modules=ALL-SYSTEM/g" /usr/local/bin/start-kura ; \
     '
 
 EXPOSE 443
