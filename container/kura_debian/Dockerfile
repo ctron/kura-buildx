@@ -164,6 +164,12 @@ RUN /bin/bash -c '\
 
 COPY --from=builder /installers/cacerts.ks /opt/eclipse/kura/user/security/cacerts.ks
 
+RUN /bin/bash -c '\
+    unpack-kura ; \
+    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.beacon.scanner_1.0.500.dp ; \
+    pack-kura ; \
+    '
+
 EXPOSE 443
 
 VOLUME ["/load"]
