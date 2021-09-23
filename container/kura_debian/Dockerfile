@@ -97,11 +97,11 @@ ENV \
 RUN mkdir -p /usr/local/bin
 
 RUN apt-get -y update
-RUN apt-get -y curl openssl
+RUN apt-get -y install curl openssl
 RUN c_rehash /etc/ssl/certs
 
 RUN apt-get -y install bash zip unzip gzip tar socat dos2unix grep procps psmisc libglib2.0-0 net-tools
-RUN apt-get -y install -y bluez
+RUN apt-get -y install bluez
 
 RUN ln -s /bin/bash /usr/bin/bash
 
