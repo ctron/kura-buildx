@@ -23,7 +23,7 @@ ARG PROFILE=intel-up2-centos-7-nn,raspberry-pi-2-3-nn
 
 ENV \
   GIT_REPO=${GIT_REPO:-https://github.com/ctron/kura.git} \
-  GIT_BRANCH=${GIT_BRANCH:-feature/java_11_1} \
+  GIT_BRANCH=${GIT_BRANCH:-feature/telemetry_e2e_1} \
   KURA_DIR=/opt/eclipse/kura \
   LAUNCHER_VERSION="1.5.800.v20200727-1323"
 
@@ -100,8 +100,7 @@ RUN apt-get -y update
 RUN apt-get -y install curl openssl
 RUN c_rehash /etc/ssl/certs
 
-RUN apt-get -y install bash zip unzip gzip tar socat dos2unix grep procps psmisc libglib2.0-0 net-tools
-RUN apt-get -y install bluez
+RUN apt-get -y install bash zip unzip gzip tar socat dos2unix grep procps psmisc libglib2.0-0 net-tools bluez
 
 RUN ln -s /bin/bash /usr/bin/bash
 
