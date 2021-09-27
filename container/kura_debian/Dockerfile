@@ -165,7 +165,8 @@ COPY --from=builder /installers/cacerts.ks /opt/eclipse/kura/user/security/cacer
 
 RUN /bin/bash -c '\
     unpack-kura ; \
-    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.beacon.scanner_1.0.500.dp ; \
+    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.eddystone.scanner_1.0.300.dp ; \
+    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.ibeacon.scanner_1.0.300.dp ; \
     pack-kura ; \
     '
 
