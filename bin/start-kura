@@ -36,9 +36,11 @@ if [ -n "${PERSISTENT_DIR}" ]; then
 	JAVA_INT_OPTS="$JAVA_INT_OPTS -Dkura.snapshots=\"${PERSISTENT_DIR}/user/snapshots\""
 	JAVA_INT_OPTS="$JAVA_INT_OPTS -Dkura.packages=\"${PERSISTENT_DIR}/packages\""
 	JAVA_INT_OPTS="$JAVA_INT_OPTS -Ddpa.configuration=\"${PERSISTENT_DIR}/packages/dpa.properties\""
+	test -f "${INIT_CONFIG}" && cp "${INIT_CONFIG}" "${PERSISTENT_DIR}/user/snapshots/"
 else
 	JAVA_INT_OPTS="$JAVA_INT_OPTS -Dkura.data=\"${KURA_DIR}/data\""
 	JAVA_INT_OPTS="$JAVA_INT_OPTS -Ddpa.configuration=\"${KURA_DIR}/packages/dpa.properties\""
+	test -f "${INIT_CONFIG}" && cp "${INIT_CONFIG}" "${KURA_DIR}/user/snapshots/"
 fi
 
 JAVA_INT_OPTS="$JAVA_INT_OPTS -Dkura.custom.configuration=file:\"${KURA_CUSTOM_PROPERTIES_FILE:-${KURA_DIR}/user/kura_custom.properties}\""

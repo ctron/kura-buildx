@@ -53,6 +53,7 @@ ARG MAVEN_OPTS=""
 RUN mvn -B -f target-platform/pom.xml clean install -Pno-mirror $MAVEN_PROPS
 RUN mvn -B -f kura/pom.xml clean install $MAVEN_PROPS -Pspeedup
 RUN mvn -B -f kura/distrib/pom.xml clean install $MAVEN_PROPS -P${PROFILE} -nsu
+RUN mvn -B -f kura/examples/pom.xml clean install $MAVEN_PROPS -Pspeedup
 
 RUN ls -la /kura/kura/distrib/target
 
@@ -170,6 +171,8 @@ RUN /bin/bash -c '\
     dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.ibeacon.scanner_1.0.300.dp ; \
     pack-kura ; \
     '
+
+COPY config/snapshot_0.xml /opt/eclipse/kura/user/snapshots/
 
 EXPOSE 443
 
