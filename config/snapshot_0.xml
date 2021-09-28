@@ -231,7 +231,7 @@
                 <esf:value>device-name</esf:value>
             </esf:property>
             <esf:property array="false" encrypted="false" name="payload.encoding" type="String">
-                <esf:value>kura-protobuf</esf:value>
+                <esf:value>simple-json</esf:value>
             </esf:property>
             <esf:property array="false" encrypted="false" name="republish.mqtt.birth.cert.on.modem.detect" type="Boolean">
                 <esf:value>false</esf:value>
