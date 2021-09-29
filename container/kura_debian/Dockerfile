@@ -165,13 +165,6 @@ RUN /bin/bash -c '\
 
 COPY --from=builder /installers/cacerts.ks /opt/eclipse/kura/user/security/cacerts.ks
 
-RUN /bin/bash -c '\
-    unpack-kura ; \
-    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.eddystone.scanner_1.0.300.dp ; \
-    dp-install https://download.eclipse.org/kura/releases/4.1.0/org.eclipse.kura.example.ibeacon.scanner_1.0.300.dp ; \
-    pack-kura ; \
-    '
-
 COPY config/snapshot_0.xml /opt/eclipse/kura/user/snapshots/
 
 EXPOSE 443
