@@ -167,6 +167,12 @@ COPY --from=builder /installers/cacerts.ks /opt/eclipse/kura/user/security/cacer
 
 COPY config/snapshot_0.xml /opt/eclipse/kura/user/snapshots/
 
+RUN /bin/bash -c '\
+    unpack-kura ; \
+    dp-install "https://dentrassi.de/download/kura/microbit_0.0.1-SNAPSHOT.dp" ; \
+    pack-kura ; \
+    '
+
 EXPOSE 443
 
 VOLUME ["/load"]
