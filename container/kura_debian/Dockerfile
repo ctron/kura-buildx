@@ -169,7 +169,7 @@ COPY config/snapshot_0.xml /opt/eclipse/kura/user/snapshots/
 
 RUN /bin/bash -c '\
     unpack-kura ; \
-    dp-install "https://repo.maven.apache.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.example.microbit/0.8.2/de.dentrassi.kura.addons.example.microbit-0.8.2.dp" ; \
+    dp-install "https://repo.maven.apache.org/maven2/de/dentrassi/kura/addons/de.dentrassi.kura.addons.example.microbit/0.8.3/de.dentrassi.kura.addons.example.microbit-0.8.3.dp" ; \
     pack-kura ; \
     '
 
